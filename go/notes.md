@@ -372,6 +372,7 @@
     // or receive-only versions
     receive-only: <-chan int
     ```
+    
 - buffered channels
     - channels block sender side till receiver is available
     - block receiver side till message is available
