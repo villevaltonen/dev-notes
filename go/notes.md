@@ -237,7 +237,8 @@
     func foo() int
     // multiple return value list types surrounded by parentheses, the (result type, error) paradigm is a very common idiom
     func foo() (int, error)
-    // return using return keyword on its own can return addresses of local variables, automatically promoted from local memory (stack) to shared memory (heap)
+    // return using return keyword on its own can return addresses of local variables
+    // automatically promoted from local memory (stack) to shared memory (heap)
     return
     ```
 - anonymous functions
@@ -348,19 +349,20 @@
 
 ### Channels
 - basics
-```golang
+    ```golang
+    // create a channel with make-command
+    make(chan int)
+    // send message into channel
+    ch <- val
+    // receive message from channel
+    val := <-ch
+    // can have multiple senderes and receivers
+    // restricting data flow
+    // channel can be cast into send-only
+    chan <- int
+    // or receive-only versions
+    receive-only: <-chan int
 ```
-    - create a channel with make-command
-        - make(chan int)
-    - send message into channel
-        - ch <- val
-    - receive message from channel
-        - val := <-ch
-    - can have multiple senderes and receivers
-- restricting data flow
-    - channel can be cast into send-only or receive-only versions
-        - send-only: chan <- int
-        - receiv-only: <-chan int
 - buffered channels
     - channels block sender side till receiver is available
     - block receiver side till message is available
@@ -377,10 +379,12 @@
 
 ### Go modules
 ```golang
+// initialize a project with go modules
+go mod init github.com/villevaltonen/<project-repo> 
+
+// clean modules
+go mod tidy
+
+// list all modules
+go list -m all
 ```
-- initialize a project with go modules: 
-    - go mod init github.com/villevaltonen/<project-repo> 
-- clean modules:
-    - go mod tidy
-- list all modules:
-    - go list -m all
