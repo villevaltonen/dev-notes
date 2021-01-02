@@ -1,9 +1,9 @@
 ### Variables
 - variable declaration
     ```golang
-        - var foo int
-        - var foo int = 42
-        - foo := 42
+    var foo int
+    var foo int = 42
+    foo := 42
     ```
 - can't redeclare variables, but can shadow them
 - all variables must be used
