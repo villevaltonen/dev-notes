@@ -190,7 +190,7 @@
     - only useful in deferred functions
     - current function will not attempt to continue, but higher functions in call stack will
 
-# Pointers
+### Pointers
 - creating pointers
     - pointer types use an asterisk (*) as a prefix to type pointed to
         - *int - a pointer to an integer
