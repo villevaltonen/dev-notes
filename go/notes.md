@@ -239,7 +239,8 @@
     //single return values just list type
     func foo() int
 
-    // multiple return value list types surrounded by parentheses, the (result type, error) paradigm is a very common idiom
+    // multiple return value list types surrounded by parentheses
+    // the (result type, error) paradigm is a very common idiom
     func foo() (int, error)
 
     // return using return keyword on its own can return addresses of local variables
@@ -372,7 +373,7 @@
     // or receive-only versions
     receive-only: <-chan int
     ```
-    
+
 - buffered channels
     - channels block sender side till receiver is available
     - block receiver side till message is available
