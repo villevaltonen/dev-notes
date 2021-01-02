@@ -1,8 +1,10 @@
 ### Variables
 - variable declaration
-    - var foo int
-    - var foo int = 42
-    - foo := 42
+    ```golang
+        - var foo int
+        - var foo int = 42
+        - foo := 42
+    ```
 - can't redeclare variables, but can shadow them
 - all variables must be used
 - visibility
@@ -17,7 +19,10 @@
 - type conversions
     - destinationType(variable)
     - use strconv package for strings
-- fmt.Printf("%v, &T\n", n, n) => prints value and type
+- prints value and type:
+    ```golang
+    fmt.Printf("%v, &T\n", n, n)
+    ```
 
 ### Primitives
 - boolean type
@@ -91,9 +96,11 @@
     - collection of items with same type
     - fixed size
     - declaration styles
-        - a := [3]int{1, 2, 3}
-        - a := [...]int{1, 2, 3}
-        - var a [3]int
+        ```golang
+        a := [3]int{1, 2, 3}
+        a := [...]int{1, 2, 3}
+        var a [3]int
+        ``` 
     - accessed via zero-based index
     - len function returns size of array
     - copies refer to different underlying data
@@ -103,8 +110,10 @@
         - slice existing array or slice
         - literal style
         - via make-function
-            - a := make([]int, 10) // create slice with capacity and length == 10
-            - a := make([]int, 10, 100) // slice with lenght == 10 and capacity == 100
+            ```golang
+            a := make([]int, 10) // create slice with capacity and length == 10
+            a := make([]int, 10, 100) // slice with lenght == 10 and capacity == 100
+            ```
     - len function returns length to slice
     - cap function returns length of underlying array
     - append function to add elements to slice
@@ -116,7 +125,9 @@
     - collections of value types that are accessed via keys
     - created via literals or via make-function
     - members accessed via [key] syntax
-        - myMap["key"] = "value"
+        ```golang
+        myMap["key"] = "value"
+        ```
     - check for presence with "value, ok" form of result
     - multiple assignments refer to same underlying data
 - structs
@@ -146,17 +157,19 @@
 
 ### Looping
 - for-statements
-    - simple loops
-        - for initializer; test; incrementer {}
-        - for test {}
-        - for {}
-    - exiting early
-        - break
-        - continue
-        - labels
-    - looping over collections
-        - arrays, slices, maps, strings, channels
-        - for k, v := range collection {}
+    ```golang
+    // simple loops
+    for initializer; test; incrementer {}
+    for test {}
+    for {}
+
+    // exiting early
+    break
+    continue
+
+    //looping over collections (arrays, slices, maps, strings, channels)
+    for k, v := range collection {}
+    ```
 
 ### Defer, Panic & Recover
 - defer
@@ -180,17 +193,20 @@
 # Pointers
 - creating pointers
     - pointer types use an asterisk (*) as a prefix to type pointed to
-        - *int -a pointer to an integer
+        - *int - a pointer to an integer
     - use the addressof operator (&) to get address of variable
     - dereferencing pointers
         - dereference a pointer by preceding with an asterisk (*)
         - complex types (e.g. structs) are automatically dereferenced
     - create pointers to objects
-        - can use the addressof operator (&) if value type already exists
-            - ms := myStruct{foo: 42}
-              p := &ms
-        - use addressof operator before initializer
-            - &myStruct{foo: 42}
+        ```golang
+        // can use the addressof operator (&) if value type already exists
+        ms := myStruct{foo: 42}
+        p := &ms
+
+        // use addressof operator before initializer
+        &myStruct{foo: 42}
+        ```
         - use the new keyword
             - can't initialize fields at the same time
         - types with internal pointers
@@ -199,96 +215,108 @@
 
 ### Functions
 - basic syntax
-    - func foo() {
+    ```golang
+    func foo() {
         ...
-      }
+    }
+    ```
 - parameters
-    - comma delimited list of variables and types
-        - func foo(bar string, baz int)
-    - parameters of same type list type once
-        - func foo(bar, baz int)
-    - when pointers are passed in, the function can change the value in the caller
-        - this is always true for data of slices and maps
-    - use variadic parameters to send list of same types in
-        - must be last parameter
-        - received as a slice
-        - func foo(bar string, baz ...int)
+    ```golang
+    // comma delimited list of variables and types
+    func foo(bar string, baz int)
+    // parameters of same type list type once
+    func foo(bar, baz int)
+    // when pointers are passed in, the function can change the value in the caller
+    this is always true for data of slices and maps
+    // use variadic parameters to send list of same types in (must be last parameter, received as a slice)
+    func foo(bar string, baz ...int)
+    ```
 - return values
-    - single return values just list type
-        - func foo() int
-    - multiple return value list types surrounded by parentheses
-        - func foo() (int, error)
-        - the (result type, error) paradigm is a very common idiom
-        - return using return keyword on its own
-    - can return addresses of local variables
-        - automatically promoted from local memory (stack) to shared memory (heap)
+    ```golang
+    //single return values just list type
+    func foo() int
+    // multiple return value list types surrounded by parentheses, the (result type, error) paradigm is a very common idiom
+    func foo() (int, error)
+    // return using return keyword on its own can return addresses of local variables, automatically promoted from local memory (stack) to shared memory (heap)
+    return
+    ```
 - anonymous functions
     - functions don't have names if they are:
-        - immediately invoked
-            - func() {
-                ...
-              }()
-        - assigned to a variable or passed as an argument to a function
-            - a := func() {
-                ...
-              }
-              a()
+        ```golang
+        // immediately invoked
+        func() {
+            ...
+        }()
+        // assigned to a variable or passed as an argument to a function
+        a := func() {
+            ...
+        }
+        a()
+        ```
 - functions as types
     - can assign functions to variables or use as arguments and return values in functions
     - type signature is like function signature, with no parameter names
-        - var f func(string, string, int) (int, error)
+        ```golang
+        var f func(string, string, int) (int, error)
+        ```
 - methods
     - function that executes in context of a type
     - format
-        - func (g greeter) greet() {
+        ```golang
+        func (g greeter) greet() {
             ...
-          }
+        }
+        ```
     - receiver can be value or pointer
         - value receiver get copy of type
         - pointer receiver gets pointer to type
 
 ### Interfaces
 - basics
+    ```golang
     type Writer inteface{
-      Write([]byte) (int, error)
-    }
-
-    type ConsoleWriter struct {}
-
-    func(cw ConsoleWriter) Wrirte(data []byte) (int, error) {
-        n, err = fmt.Println(string(data))
-        return n, err
-    }
-
-- composing interfaces
-    type Writer interface {
         Write([]byte) (int, error)
-    }
+        }
 
-    type Closer interface {
-        Close() error
-    }
+        type ConsoleWriter struct {}
 
-    type WriterCloser interface {
-        Writer
-        Closer
-    }
+        func(cw ConsoleWriter) Wrirte(data []byte) (int, error) {
+            n, err = fmt.Println(string(data))
+            return n, err
+        }
+    ```
+- composing interfaces
+    ```golang
+    type Writer interface {
+            Write([]byte) (int, error)
+        }
 
+        type Closer interface {
+            Close() error
+        }
+
+        type WriterCloser interface {
+            Writer
+            Closer
+        }
+    ```
 - type conversion
+    ```golang
     var wc WriterCloser = NewBufferedWritereCloser()
     bwc := wc.(*BufferedWriterCloser)
-
+    ```
 - the empty interface and type switches
+    ```golang
     var i interface{} = 0
-    switch i.(type) {
+        switch i.(type) {
         case int:
-            fmt.Println("i is an integer)
+            fmt.Println("i is an integer")
         case string:
-            fmt.Println("i is a string)
+            fmt.Println("i is a string")
         default:
-            fmt.Println("I don't know what i is)
-    }
-
+            fmt.Println("I don't know what i is")
+        }
+    ```
 - implementing with values vs. pointers
     - method set of value is all methods with value receivers
     - method set of pointer is all methods, regardless of receiver type
@@ -320,6 +348,8 @@
 
 ### Channels
 - basics
+```golang
+```
     - create a channel with make-command
         - make(chan int)
     - send message into channel
@@ -346,6 +376,8 @@
         - if multiple channels receive value simultaneuosly, behavior is undefined
 
 ### Go modules
+```golang
+```
 - initialize a project with go modules: 
     - go mod init github.com/villevaltonen/<project-repo> 
 - clean modules:
