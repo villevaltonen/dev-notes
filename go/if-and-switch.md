@@ -1,0 +1,16 @@
+### If & Switch
+- if-statements
+    - initializer
+    - comparison operators
+    - logical operators
+    - short circuiting
+    - if-else-statements
+    - if-else-if-statements
+    - equality and floats
+- switch-statements
+    - switching on a tag
+    - initializers
+    - switches with no tag
+    - fallthrough
+    - type switches
+    - breaking out early

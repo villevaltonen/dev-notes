@@ -1,0 +1,17 @@
+### Goroutines
+- creating goroutines
+    - use go-keyword in front of function call
+    - when using anonymous functions, pass data as local variable
+- synchronization
+    - use sync.WaitGroup to wait for groups of goroutines to complete
+    - use sync.Mutex and sync.RWMutex to protect data access
+- parallelism
+    - by default, Go will use CPU threads equal to available cores
+    - change with runtime.GOMAXPROCS
+    - more threads can increase performance, but too many can slow it down
+- best practices
+    - don't create goroutines in libraries
+        - let consumer control concurrency
+    - when creating a goroutine, know how it will end
+        - avoids subtle memory leaks
+    - check for race conditions at compile time

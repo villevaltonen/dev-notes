@@ -1,0 +1,18 @@
+### Constants
+- immutable, but can be shadowed
+- replaced by the compiler at compile time
+    - value must be calculable at compile time
+- named like variables
+- typed constant work like immutable variables
+    - can interoperate only with same type
+- untyped constants work like literals
+    - can interoperate with similar types
+- enumerated constants
+    - special symbol "iota" allows related constants to be created easily
+    - iota starts at 0 in each const block and increments by one
+    - watch out of constant values that match zero values for variables
+- enumerated expressions
+    - operations that can be determined at compile time are allowed
+        - arithmetic
+        - bitwise operations
+        - bitshifting
