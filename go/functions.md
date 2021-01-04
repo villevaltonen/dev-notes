@@ -1,10 +1,12 @@
 ## Functions
-- basic syntax
+
 ```golang
+// basic syntax
 func foo() {
     ...
 }
 ```
+
 ### Parameters
 ```golang
 // comma delimited list of variables and types
@@ -19,6 +21,7 @@ this is always true for data of slices and maps
 // use variadic parameters to send list of same types in (must be last parameter, received as a slice)
 func foo(bar string, baz ...int)
 ```
+
 ### Return values
 ```golang
 //single return values just list type
@@ -32,6 +35,7 @@ func foo() (int, error)
 // automatically promoted from local memory (stack) to shared memory (heap)
 return
 ```
+
 ### Anonymous functions
 - functions don't have names if they are:
 ```golang

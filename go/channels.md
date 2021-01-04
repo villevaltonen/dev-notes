@@ -1,5 +1,5 @@
 ## Channels
-- basics
+
 ```golang
 // create a channel with make-command
 make(chan int)
