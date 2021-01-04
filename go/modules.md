@@ -1,4 +1,4 @@
-### Go modules
+## Go modules
 ```golang
 // initialize a project with go modules
 go mod init github.com/villevaltonen/<project-repo> 

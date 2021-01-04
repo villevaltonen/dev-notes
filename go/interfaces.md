@@ -1,52 +1,56 @@
-### Interfaces
-- basics
-    ```golang
-    type Writer inteface{
+## Interfaces
+
+### Basics
+```golang
+type Writer inteface{
+    Write([]byte) (int, error)
+    }
+
+    type ConsoleWriter struct {}
+
+    func(cw ConsoleWriter) Wrirte(data []byte) (int, error) {
+        n, err = fmt.Println(string(data))
+        return n, err
+    }
+```
+### Composing interfaces
+```golang
+type Writer interface {
         Write([]byte) (int, error)
-        }
+    }
 
-        type ConsoleWriter struct {}
+    type Closer interface {
+        Close() error
+    }
 
-        func(cw ConsoleWriter) Wrirte(data []byte) (int, error) {
-            n, err = fmt.Println(string(data))
-            return n, err
-        }
-    ```
-- composing interfaces
-    ```golang
-    type Writer interface {
-            Write([]byte) (int, error)
-        }
+    type WriterCloser interface {
+        Writer
+        Closer
+    }
+```
 
-        type Closer interface {
-            Close() error
-        }
+### Type conversion
+```golang
+var wc WriterCloser = NewBufferedWritereCloser()
+bwc := wc.(*BufferedWriterCloser)
+```
 
-        type WriterCloser interface {
-            Writer
-            Closer
-        }
-    ```
-- type conversion
-    ```golang
-    var wc WriterCloser = NewBufferedWritereCloser()
-    bwc := wc.(*BufferedWriterCloser)
-    ```
-- the empty interface and type switches
-    ```golang
-    var i interface{} = 0
-        switch i.(type) {
-        case int:
-            fmt.Println("i is an integer")
-        case string:
-            fmt.Println("i is a string")
-        default:
-            fmt.Println("I don't know what i is")
-        }
-    ```
-- implementing with values vs. pointers
-    - method set of value is all methods with value receivers
-    - method set of pointer is all methods, regardless of receiver type
+### The empty interface and type switches
+```golang
+var i interface{} = 0
+    switch i.(type) {
+    case int:
+        fmt.Println("i is an integer")
+    case string:
+        fmt.Println("i is a string")
+    default:
+        fmt.Println("I don't know what i is")
+    }
+```
+
+### Implementing with values vs. pointers
+- method set of value is all methods with value receivers
+- method set of pointer is all methods, regardless of receiver type
 - best practices
     - use many, small interfaces
         - single method interfaces are some of the most powerful and flexible

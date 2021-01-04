@@ -1,4 +1,4 @@
-### Goroutines
+## Goroutines
 - creating goroutines
     - use go-keyword in front of function call
     - when using anonymous functions, pass data as local variable

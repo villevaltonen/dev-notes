@@ -1,5 +1,5 @@
-### Arrays & Slices
-- arrays
+## Arrays & Slices
+### Arrays
     - collection of items with same type
     - fixed size
     - declaration styles
@@ -11,7 +11,7 @@
     - accessed via zero-based index
     - len function returns size of array
     - copies refer to different underlying data
-- slices
+### Slices
     - backed by array
     - creation styles
         - slice existing array or slice

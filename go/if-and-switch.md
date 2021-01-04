@@ -1,4 +1,4 @@
-### If & Switch
+## If & Switch
 - if-statements
     - initializer
     - comparison operators

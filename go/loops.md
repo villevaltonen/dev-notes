@@ -1,15 +1,16 @@
-### Loops
-- for-statements
-    ```golang
-    // simple loops
-    for initializer; test; incrementer {}
-    for test {}
-    for {}
+## Loops
 
-    // exiting early
-    break
-    continue
+### for-statements
+```golang
+// simple loops
+for initializer; test; incrementer {}
+for test {}
+for {}
 
-    //looping over collections (arrays, slices, maps, strings, channels)
-    for k, v := range collection {}
-    ```
+// exiting early
+break
+continue
+
+//looping over collections (arrays, slices, maps, strings, channels)
+for k, v := range collection {}
+```
