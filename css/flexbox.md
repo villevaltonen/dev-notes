@@ -40,7 +40,7 @@
     align-items: baseline;
     align-items: stretch;
     ```
-- flex-grow
+### flex-grow
     - needs to be added to every element
     - default value is 0
     ```css
