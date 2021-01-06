@@ -15,14 +15,13 @@ fetch('http://localhost:8080/api/getsomething', {
     body: JSON.stringify({
         name: 'User 1'
     })
-}) // Return Promise
-    .then(res => {
-        if(res.ok) {
-            return res.json())
-        } else {
-            console.log("FAILURE")
-        }
+})
+.then(res => {
+    if(res.ok) {
+        return res.json())
+    } else {
+        console.log("FAILURE")
     }
-    .then(data => console.log(data))
-    
+}
+.then(data => console.log(data)) 
 ```
