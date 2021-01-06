@@ -1,6 +1,6 @@
 ### OOP: Prototypes and classes
 
-Class (ES5)
+### Class (ES5)
 ```javascript
 // Constructor function
 function Person(firstName, lastName, dob) {
@@ -16,7 +16,7 @@ function Person(firstName, lastName, dob) {
 const person1 = new Person('John', 'Doe', '1-1-1980');
 ```
 
-Prototype (ES5)
+### Prototype (ES5)
 ```javascript
 // This way methods won't be in the object, they'll be in the prototype
 Person.prototype.getBirthYear = function() {
@@ -24,7 +24,7 @@ Person.prototype.getBirthYear = function() {
 }
 ```
 
-Class (ES6)
+### Class (ES6)
 ```javascript
 class Person {
     constructor(firstName, lastName, dob) {
