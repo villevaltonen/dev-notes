@@ -1,4 +1,6 @@
-## Javascript in JSX
+## JSX
+
+### Javascript in JSX
 
 ```javascript
 const Book = () => {

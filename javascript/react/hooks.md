@@ -2,11 +2,11 @@
 
 ### useState
 
-- the hook method has to be imported from react-package
+- The hook method has to be imported from react-package
 - useState returns an array, where first element is the value and the second one is the handler
-- components which use hooks, have to start with upper case
-- must be in the function/component body
-- remember to use an arrow function e.g. in button for events, because otherwise the function will be invoked as soon as component renders, not on click or whatever event is used
+- Components which use hooks, have to start with upper case
+- Must be in the function/component body
+- Remember to use an arrow function e.g. in button for events, because otherwise the function will be invoked as soon as component renders, not on click or whatever event is used
 
 ```javascript
 // "random text" is the default value
@@ -87,6 +87,21 @@ const complexIncrease = () => {
 
 ### useEffect
 
-```javascript
+- Runs after every re-render by default
+- Supports second parameter (optional), an array, which makes useEffect run only if the elements in the array have changed
+- An empty array means that useEffect will only run on the initial render
 
+```javascript
+// Simple example
+useEffect(() => {
+  console.log(`foo ${value}`);
+}, [value]);
+
+// Cleanup function for event listeners etc.
+useEffect(() => {
+  window.addEventListerner("resize", checkSize);
+  return () => {
+    window.removeEventListener("resize", checkSize);
+  };
+});
 ```
