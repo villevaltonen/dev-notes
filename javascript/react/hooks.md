@@ -105,3 +105,153 @@ useEffect(() => {
   };
 });
 ```
+
+### useRef
+
+- Preserves value
+- Does not trigger re-render
+- Popular use case is to target DOM nodes/elements
+
+```javascript
+const UseRefBasics = () => {
+  const refContainer = useRef(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(refContainer.current.value);
+  };
+
+  return (
+    <>
+      <form className="form" onSubmit={handleSubmit}>
+        <div>
+          <input type="text" ref={refContainer} />
+          <button type="submit">Submit</button>
+        </div>
+      </form>
+    </>
+  );
+};
+```
+
+### useReducer
+
+- Similar to Redux, but not a direct replacement: Redux manages global state, useReducer component level state
+
+```javascript
+// Reducer function
+// Usually reducer is moved into a separate file
+const reducer = (state, action) => {
+  if (action.type === "ADD_ITEM") {
+    const newItems = [...state.people, action.payload];
+    return {
+      ...state,
+      people: newPeople,
+      isModalOpen: true,
+      modalContent: "An item added",
+    };
+  }
+
+  if (action.type === "NO_VALUE") {
+    return {
+      ...state,
+      isModalOpen: true,
+      modalContent: "Please enter an value",
+    };
+  }
+
+  if (action.type === "CLOSE_MODAL") {
+    return { ...state, isModalOpen: false };
+  }
+
+  if(action.type === "REMOVE_ITEM") {
+    const newPeople = state.people.filter((person) => person.id !== action.payload);
+    return {...state: people: newPeople}
+  }
+
+  throw new Error("No matching action type");
+};
+
+const defaultState = {
+  people: [],
+  isModalOpen: false,
+  modalContent: "",
+};
+
+const Index = () => {
+  const [name, setName] = useState("");
+  const [state, dispatch] = useReducer(reducer);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (name) {
+      const newItem = { id: new Date().getTime().toString(), name };
+      dispatch({ type: "ADD_ITEM", payload: newItem });
+      setName("");
+    } else {
+      dispatch({ type: "NO_VALUE" });
+    }
+  };
+
+  const closeModal = () => {
+    dispatch({ type: "CLOSE_MODAL" });
+  };
+
+  return (
+    <>
+      {state.isModalOpen && (
+        <Modal closeModal={closeModal} modalContent={state.modalContent} />
+      )}
+      <form onSubmit={handleSubmit} className="form">
+        <div>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        <button type="submit">Add</button>
+      </form>
+      {state.people.map((person) => {
+        return (
+          <div key={person.id}>
+            <h4>{person.name}</h4>
+            <button
+              onClick={() => {
+                dispatch((type: "REMOVE_ITEM"), (payload: person.id));
+              }}
+            >
+              Remove item
+            </button>
+          </div>
+        );
+      })}
+    </>
+  );
+};
+```
+
+### Custom hooks
+
+```javascript
+import { useState, useEffect } from 'react';
+
+// Returns an object, which can be de-structured and used in the parent component
+export const useFetch = (url) => {
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([]);
+
+  const getProducts = async () => {
+    const response = await fetch(url);
+    const products = await response.json();
+    setProducts(products);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getProducts();
+  }. [url]);
+
+  return { loading, products };
+}
+```
