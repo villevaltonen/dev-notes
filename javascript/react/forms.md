@@ -19,7 +19,7 @@ const ControlledInputs = () => {
       <article>
         <form className="form">
           <div className="form-control">
-            <label htlmFor="firstName">Name: </label>
+            <label htmlfor="firstName">Name: </label>
             <input
               type="text"
               id="firstName"
@@ -29,7 +29,7 @@ const ControlledInputs = () => {
             />
           </div>
           <div className="form-control">
-            <label htlmFor="email">Name: </label>
+            <label htmlfor="email">Name: </label>
             <input
               type="text"
               id="email"
