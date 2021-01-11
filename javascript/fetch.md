@@ -11,7 +11,7 @@ fetch('http://localhost:8080/api/getsomething', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
-    }
+    },
     body: JSON.stringify({
         name: 'User 1'
     })
