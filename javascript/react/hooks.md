@@ -64,7 +64,7 @@ const UseStateArray = () => {
 export default UseStateArray;
 
 // useState with an object
-const [person, setPerson] = useStaet({
+const [person, setPerson] = useState({
   name: "john",
   age: 20,
   message: "random message",
