@@ -44,6 +44,78 @@
   - setRightChild()
   - killNode(): removes and releases node n from tree T as well as all children and successors
 
+```java
+  /**
+  * Returns the first node of inordered binary tree.
+  *
+  * @param T Tree.
+  * @param <E> Type of the elements
+  * @return The first node in inorder or null if the tree is empty
+  */
+  @Override
+  public <E> BTreeNode<E> inorderFirst(BTree<E> T) {
+
+      // check if tree is empty
+      if(T.isEmpty()) return null;
+
+      // get root and check if it is the first
+      BTreeNode<E> root = T.getRoot();
+      if(root.getLeftChild() == null) return root;
+
+      // get child and loop until there is no left child
+      BTreeNode<E> child = root.getLeftChild();
+
+      while(child.getLeftChild() != null) {
+          child = child.getLeftChild();
+      }
+
+      return child;
+  }
+
+  /**
+    * Returns the successor node in inordered binary tree
+    *
+    * @param n Node of the binary tree
+    * @return Successor node or null if there is no successor
+    */
+  @Override
+  public <E> BTreeNode<E> inorderSuccessor(BTreeNode<E> n) {
+
+      // if no right child and no parent, no successor
+      if(n.getRightChild() == null && n.getParent() == null) {
+          return null;
+      }
+
+      // if no right child, traverse upwards until previous is left child of parent
+      if(n.getRightChild() == null) {
+          BTreeNode<E> current = n;
+          BTreeNode<E> previous;
+
+          while(current.getParent() != null) {
+              previous = current;
+              current = current.getParent();
+              if(current.getLeftChild() == previous) {
+                  return current;
+              }
+          }
+
+          // if conditions not met, return null (applies only to the last node of the tree)
+          return null;
+      }
+
+      // get the most left child of the right child
+      BTreeNode<E> child = n.getRightChild();
+
+      while(child.getLeftChild() != null) {
+          child = child.getLeftChild();
+      }
+
+      return child;
+  }
+}
+
+```
+
 ### Search trees
 
 - Searching, adding and removing are O(height of the tree)
