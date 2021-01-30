@@ -140,8 +140,8 @@
     - No rebuilding the tree
   - Removal is O(logn) because rotation might have to be performed on multiple levels
 
-  ### Generic tree
+### Generic tree
 
-  - E.g. organisation chart, process flow, game situtations
-  - Can be implemented with a linked list
-    - The children of an element are a linked list, which are containing the information of the first, the last and the next as well as their children
+- E.g. organisation chart, process flow, game situtations
+- Can be implemented with a linked list
+  - The children of an element are a linked list, which are containing the information of the first, the last and the next as well as their children
