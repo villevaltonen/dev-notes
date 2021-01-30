@@ -8,9 +8,9 @@
 // The whole array is sorted by calling quicksort(A, 0, A.length-1)
 public static <E extends Comparable<? super E>> void quicksort(E[]A, int i, int j) {
   if(i < j) {
-    int jako = partition(A, i, j); // jaottelu
-    quicksort(A, i, jako-1); // alkuosa
-    quicksort(A, jako+1, j); // loppuosa
+    int pivot = partition(A, i, j); // jaottelu
+    quicksort(A, i, pivot-1); // alkuosa
+    quicksort(A, pivot+1, j); // loppuosa
   }
 }
 ```
