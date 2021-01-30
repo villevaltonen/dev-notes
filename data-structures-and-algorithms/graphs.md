@@ -17,3 +17,17 @@
   - Modified set operations are used for handling them
   - Nodes are clearly a set
   - Edges are actually a relation
+
+### Depth first search
+
+- Start from a node and color it (means already visited)
+- Move to neigbours, if they're not colored yet
+- If something was not visited yet, pick a new starting node
+- Classifying edges
+  - Tree edge: leads to unvisited node
+  - Back edge: leads back to predecessor
+  - Forward edge: leads from node to successor
+  - Crossed edge: do not lead to predecessor or successor
+- Tree edges form a spanning forest, i.e. set of directed trees, which contain all of the nodes in the graph
+  - If a spanning forest contains only one tree, it is called spanning tree
+  - There can be multiple different spanning trees depending on the root node

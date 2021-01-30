@@ -83,3 +83,12 @@
 ### Invariants
 
 - Invariant is something that does not change
+
+### Measuring the time complexity
+
+- If the input is doubled and the time
+  - doubles => linear
+  - becomes slightly bigger than doubled => e.g. O(nlogn)
+  - quadruples => quadratic
+  - eightfolds => cubic
+- If input is increased by one and the time spent doubles => exponential (2^n)
