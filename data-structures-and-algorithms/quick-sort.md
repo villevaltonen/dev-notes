@@ -30,7 +30,7 @@ public static <E extends Comparable<? super E>> void quicksort(E[]A, int i, int 
 
 ### Choosing the pivot
 
-- pivot does not effect to the accuracy of the algorithm, but it is effecting the time complexity
+- Pivot does not effect to the accuracy of the algorithm, but it is effecting the time complexity
 - The best time complexity is achieved with equal sized partitions
 - The easiest way is to pick a random element as pivot (could be random, the one in the middle, the first etc.)
 - Because pivot is very critical for time complexity, it is okay to use some time while choosing a pivot
