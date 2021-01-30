@@ -21,4 +21,4 @@
   ### Classification of time complexity functions
 
   - Exponential time complexity
-    - E.g. $2^2$
+    - E.g. 2²
