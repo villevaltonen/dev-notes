@@ -17,5 +17,5 @@
 
 ### Implementating set
 
-- If order is needed, then implementation with inordered balanced binary tree
+- If order is needed, then implementation with inorder balanced binary tree
 - Otherwise usually a hashmap

@@ -46,7 +46,7 @@
 
 ```java
   /**
-  * Returns the first node of inordered binary tree.
+  * Returns the first node of inorder binary tree.
   *
   * @param T Tree.
   * @param <E> Type of the elements
@@ -73,7 +73,7 @@
   }
 
   /**
-    * Returns the successor node in inordered binary tree
+    * Returns the successor node in inorder binary tree
     *
     * @param n Node of the binary tree
     * @return Successor node or null if there is no successor
