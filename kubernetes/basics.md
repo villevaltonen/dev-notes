@@ -35,13 +35,29 @@ kubectl logs
 kubectl exec
 ```
 
+### Control plane
+- Control plane contains:
+  - kube-apiserver
+  - etcd
+  - kube-scheduler
+  - kube-controller-manager
+  - cloud-controller-manager
+
 ### Node
 - Can have multiple Pods
 - Node is a worker machine in Kubernetes (either virtual or physical)
 - Has at least Kubelet and a container runtime (like Docker) running on it
-- Each node contain a Kubelet, which is an agent for management and communication
-- A node is required to have something like containerd or Docker too
+- Contains:
+  - kubelet: an agent making sure containers are running in a Pod
+  - kube-proxy: a network proxy, implementing the Kubernetes Service concept i.e. manages newrok rules
+  - container runtime: Docker, containerd or similar
 - Nodes communicate with the master through Kubernetes API
+
+### Addons
+- DNS: a DNS server for Kubernetes
+- Web UI (Dashboard): a general purpose web-based UI for cluster
+- Container Resource Monitoring: records generic time-series metrics and provides a UI for browsing that data
+- Cluster-level Logging: responsible for saving container logs to a central log store with search/browsing interface
 
 ### Pod
 - Pod is a group of one or more containers, tied together for the purposes of administration and networking
