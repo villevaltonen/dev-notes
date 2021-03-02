@@ -23,6 +23,9 @@ minikube addons enable metrics-server
 # Stop minikube
 minikube stop
 
-# Delete Minikube VM (optional)
+# Delete Minikube VM
 minikube delete
+
+# Get IP-address
+minikube ip
 ```
