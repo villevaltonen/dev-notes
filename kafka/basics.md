@@ -1,0 +1,21 @@
+## Basics
+
+- A distributed pub/sub streaming platform
+- Data within Kafka is called a message
+    - An array of bytes
+    - Optional metadata called key (also a byte arrays)
+- Batch is a collection of messages, which are produced to the same topic and partition
+- Topics are broken down into partitions
+- Messages are being written by producers and read by consumers
+- Connect and Streams are based on producers/consumers
+- Messages can be directed to specific partitions with key
+- Consumers are keeping track on read messages with offset
+- Consumers are dividing partitions between a consumer group
+- Kafka server is called broker and multiple brokers form a cluster
+- Cluster has a controller, which is elected and is responsible of administrative operations
+- Benefits of Kafka
+    - Multiple producers
+    - Multiple consumers
+    - Scalability
+    - High performance
+    - Disk-based retention
