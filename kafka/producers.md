@@ -46,3 +46,5 @@
 - All records with the same key will end up into same partition
 - Mapping is based on Kafkas own hash algorithm
 - Mapping of keys is consistent only if number of partitions remain same
+- Default partition strategy is round robin and hash based
+- Custom partitioner can be implemented as well
