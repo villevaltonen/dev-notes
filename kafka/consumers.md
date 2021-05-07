@@ -64,3 +64,30 @@
 - Retrying async commits can be implemented by using an instance level variable to be compared upon callbacks to see if there are newer offsets committed
 
 ### Combining synchronous and asynchronous commits
+- In case we know our commit is the last one before rebalance/closing consumer, we want to be extra careful with the commit.
+- A common pattern is to combine both types of commits just before shutdown: async as a default and sync in "finally"-block
+
+### Commit specified offset
+- Consumer API allows to call commitSync() and commitAsync() and pass partitions and offsets as parameters to be commited
+
+### Rebalance listeners
+- Consumer API allows to run your own code upon partition changes with ConsumerRebalanceListener, which is passed to subscribe()
+- ConsumerRebalanceListener has two methods: 
+    - onPartitionsRevoked()
+    - onPartitionsAssigned()
+
+### Consuming records with specific offsets
+- E.g. you can store offset to other system than Kafka, like to a database
+- seek() allows to move to a specific offset
+
+### How to exit cleanly
+- consumer.wakeup() can be called to exit poll loop
+- consumer.wakeup() can be called from other thread (only consumer-method, which allows this)
+- Can be done from ShutdownHook, if running on main thread
+- Remember to close() consumer before exiting the thread
+
+### Serializers and deserializers
+- Serializers and deserializers are required to convert objects into byte arrays and vice versa
+
+### Standalone consumer: why and how
+- Consumer can either subscribe to a topic (as a part of consumer group) or assign partitions to itself, but not both at the same time

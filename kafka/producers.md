@@ -20,7 +20,7 @@
 - Can have a callback method to handle exceptions
 
 ### Configs worth checking out:
-- acks
+- acks (how many brokers acknowledge the message is receied before it is considered successful)
 - buffer.memory
 - compression.type
 - retries
