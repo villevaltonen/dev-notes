@@ -1,4 +1,4 @@
-## Administering Kafka
+## Administering
 
 ### Topic operations
 - kafka-topics.sh for accessing most topic operations
