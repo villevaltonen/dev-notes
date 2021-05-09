@@ -91,4 +91,45 @@
     - For example if a new version of the app is needed, a parallel instance with a new version can be running with a new consumer group
 
 ### Kafka Streams by example
+- Kafka Streams has two streams APIs - a low-level Processor API and a high-level Streams DSL
+- An application with DSL API always starts with using the StreamBuilder to create a processing topology
+    - A processing topology is a directed graph (DAG) of transformations that are applied to the events in the strams
+- Then you create a KafkaStreams execution object from the topology
+- Starting the KafkaStreams object will start multiple threads, each applying the processing topology to events in the stream
+- The processing will conclude when you close the KafkaStreams object
+- Kafka Streams application always reads data from Kafka topics and writes its output to Kafka topics (?)
 
+### Kafka Streams: architecture overview
+- Building a topology
+    - Every streams application implements and executes at least one topology
+    - Topology is a set of operations and transitions that every event moves through from input to output
+    - Topology is made up of processors, which are the nodes in the topology graph
+    - Most processors implement an operation of the data: filter, map, aggregate etc.
+    - There are also source and sink processors, which consume and produce data to a topic
+    - Topology always starts with one or more source processors and finishes with one or more sink processors
+- Scaling the topology
+    - Kafka streams scale by allowing multiple threads of executions within one instance of the application and by supporting load balancing between distributed instances of the application
+    - The Streams engine parallelizes execution of a topology by splitting it into tasks
+    - The number of tasks is determined by the Streams engine and depends on the number of partitions in the topics
+    - Each task is responsile for a subset of the partitions: the task will subscribe to those partitions and consume events from them
+    - The task will execute all the processing steps in order before writing the result to the sink
+    - Tasks are the basic unit of parallelism in Kafka Streams, because each task can execute independently of others
+    - Application can use multiple threads per server and multiple servers per application
+    - Sometimes processing step requires results from multiple partitions, which creates dependencies between tasks
+    - Kafka Streams handles this situation by assigning all the partitions needed for one join to the same task so that the task can consume from all the relevant partitions and perform, for example, joins independently
+    - If repartitioning is required in the processing, it will be split to two independent sub-topologies with no shared resources between tasks and the sub-topologies will be completely decoupled apart the topic, which other uses as an output and other as an input
+- Surviving failures
+    - The same model, that allows us to scale our application also allows us to gracefully handle failures
+    - Kafka is highly available and therefore the data we persist to Kafka is also highly available
+    - If an application fails and needs to restart, it can look up its last position in the stream from Kafka and continue its processing from the last offset it commited before failing
+    - Note that if the local state store is lost (e.g., because we needed to replace the server it was stored on), the streams application can always re-create it from the change log it stores in Kafka
+    - Kafka Streams also leverages Kafka's consumer coordination to provide high availability for tasks
+    - If a task failed but there are threads or other instances of the streams application that are active, the task will restart on on of the available threads
+    - This is similar to how consumer groups handle the failure of one of the consumers in the group by assigning partitions to one of the remaining consumers
+
+### How to choose a stream-processing framework
+- Differenty types of applciations call for different stream-processing solutions:
+    - Ingest: You should reconsider if you need a stream processing system or a simpler ingest-focused system like Kafka Connect
+    - Low milliseconds actions: Usually request-response patterns work better for these
+    - Asynchronous microservices: For these, you need a stream processing system that integrates well with your message bus of choice, has change capture capabilities and has good support for local store to serve as a cache or materialized view
+    - Near real-time data analytics: You should use a stream-processing system with great support for a local store to support advanced aggreagations, windows and joins that are otherwise difficult to implement
