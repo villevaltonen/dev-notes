@@ -53,7 +53,7 @@
 ### Commit current offset
 - The simplest and most reliable is commitSync()
 - commitSync() will commit the latest offset returned by poll() and return once the offset is commited or throwing an error if commit fails
-- commitSync() will commit the latest offset returned by poll) so it is important to call it only after all records in the poll loop are handled
+- commitSync() will commit the latest offset returned by poll() so it is important to call it only after all records in the poll loop are handled
 - Will process records since the last commit twice in case of rebalancing
 - commitSync() will retry until a non-recoverable exception occurs
 
