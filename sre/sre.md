@@ -42,3 +42,9 @@
 - Process for declaring incidents
 - Dashboard for viewing current incidents
 - Database of who to contact for each kind of incident
+
+### SLIs for different kind of systems
+- User-facing serving systems: availability, latency, throughput
+- Storage systems: latency, availability, durability
+- Big data systems: throughput, end-to-end-latency
+- All systems: correctness, though this is usually more about the data and not SREs responsibility
