@@ -13,6 +13,7 @@ db.<collection>.find({ <query here> }).pretty()
 ```
 
 ### Insert
+```bash
 # insert
 db.<collection>.insert(<json here>)
 
@@ -21,6 +22,7 @@ db.<collection>.insert([<json>, <json>])
 
 # insert order (unordered inserts all documents with an unique _id, but fails duplicates)
 db.<collection>.insert([<json>, <json>], { “ordered”: false })
+```
 
 ### Update
 ```bash
