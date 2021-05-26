@@ -48,3 +48,9 @@
 - Storage systems: latency, availability, durability
 - Big data systems: throughput, end-to-end-latency
 - All systems: correctness, though this is usually more about the data and not SREs responsibility
+
+### The four golden signals
+- Latency
+- Traffic
+- Errors
+- Saturation
