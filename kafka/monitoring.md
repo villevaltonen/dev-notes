@@ -123,6 +123,9 @@
         - record-error-rate
             - This is something you want to set an alert for
             - This metric should always be zero and if it's more than zero, the producer is dropping messages
+        - record-retry-rate
+            - The average per second of retried record sends
+            - This might be interesting to get insight of the stability
         - request-latency-avg
             - The average amount of time a produce request sent to the brokers take
             - A baseline value should be established and an alert above that threshold should be set
