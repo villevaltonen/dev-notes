@@ -26,7 +26,7 @@
 - Memory is divided into generations
 - Separate pools for objects of different ages
 
-### JVM garbage collectors (Hotspot JVM)
+### JVM garbage collectors
 - Serial collector
     - If your applicatoin does not have a requirement for low pause times
 - Parallel collector
@@ -38,6 +38,11 @@
     - If you need shorter garbage collection pauses and can afford to share processor resources with the garbage collector while application is running
     - Applications with a relatively large set of long-lived data and run on machines with two or more processors usually benefit of using CMS collector
     - Should be considered for any application with low pause time requirement
+- G1 collector
+    - Better support for larger than 4Gb heap size
+    - Multiple background threads
+    - Low pause
+    - Default since Java 9 for server-class machines (multi-cpu unlix-like or any 64bit JVM)
 
 ### Tools for evaluating garbage collection performance
 - -XX:+PrintGCDetails cli-option
