@@ -33,6 +33,9 @@ kubectl logs
 
 # Exec
 kubectl exec
+
+# Port forward a local port to the cluster
+kubectl port-forward service/my-awesome-service 8081:80
 ```
 
 ### Control plane
