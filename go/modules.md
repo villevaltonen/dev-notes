@@ -3,7 +3,7 @@
 // initialize a project with go modules
 go mod init github.com/villevaltonen/<project-repo> 
 
-// clean modules
+// adds missing module requirements for imported packages and removes requirements on modules that aren't used anymore
 go mod tidy
 
 // list all modules
