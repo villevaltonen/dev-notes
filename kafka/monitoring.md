@@ -15,7 +15,7 @@
 - Gives a count of the number of partitions for which the broker is the leader replica, where the follower replicas are not caught up
 - Provides information from a broker being down to resource exhaustion
 - JMX MBean: kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions
-- A steady number of unde-replicated partitions reported by many of the brokers in a cluster normally indicates that one of the brokers in the cluster is offline
+- A steady number of under-replicated partitions reported by many of the brokers in a cluster normally indicates that one of the brokers in the cluster is offline
 - If the number is fluctuating or the number is stead but there are no brokers offline, this typically indicaes a performance issue in the cluster
 - Cluster-level problems:
     - Unbalanced load
