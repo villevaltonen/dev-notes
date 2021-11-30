@@ -3,48 +3,6 @@
 ### Cluster
 - Contains a master (coordinator) and nodes (workers)
 
-```bash
-# Check version
-kubectl version
-
-# Basic info
-kubectl cluster-info
-
-# Get nodes
-kubectl get nodes
-
-# Add proxy
-kubectl proxy
-
-# View cluster events
-kubectl get events
-
-# View cluster configuration
-kubectl config view
-
-# List resources
-kubectl get
-
-# Detailed info
-kubectl describe
-
-# Logs
-kubectl logs
-
-# Exec
-kubectl exec
-
-# Port forward a local port to the cluster
-kubectl port-forward service/my-awesome-service 8081:80
-```
-
-### Control plane
-- Control plane contains:
-  - kube-apiserver
-  - etcd
-  - kube-scheduler
-  - kube-controller-manager
-  - cloud-controller-manager
 
 ### Node
 - Can have multiple Pods
@@ -56,11 +14,13 @@ kubectl port-forward service/my-awesome-service 8081:80
   - container runtime: Docker, containerd or similar
 - Nodes communicate with the master through Kubernetes API
 
+
 ### Addons
 - DNS: a DNS server for Kubernetes
 - Web UI (Dashboard): a general purpose web-based UI for cluster
 - Container Resource Monitoring: records generic time-series metrics and provides a UI for browsing that data
 - Cluster-level Logging: responsible for saving container logs to a central log store with search/browsing interface
+
 
 ### Pod
 - Pod is a group of one or more containers, tied together for the purposes of administration and networking
@@ -73,16 +33,6 @@ kubectl port-forward service/my-awesome-service 8081:80
 - Pod is tied to the Node where it is scheduled and remains there until termination or deletion
   - In case of a Node failure, identical Pods are scheduled on other available Nodes in the cluster
 
-```bash
-# View Pods
-kubectl get pods
-
-# Expose Pod outside the cluster
-kubectl expose deployment hello-node --type=LoadBalancer --port=8080
-
-# Get more info about Pods
-kubectl get pods -o wide  
-```
 
 ### Deployment
 - Deployment instructs Kubernetes how to create and update instances of your application
@@ -93,31 +43,6 @@ kubectl get pods -o wide
 - Services have an integrated load-balancer to distribute traffic to all Pods
 - Multiple instances of an application allow rolling updates without downtime
 
-```bash
-# Create a Deployment
-kubectl create deployment hello-node --image=k8s.gcr.io/echoserver:1.4
-
-# View Deployment
-kubectl get deployments
-
-# Delete Service
-kubectl delete service hello-node
-
-# Delete Deployment
-kubectl delete deployment hello-node
-
-# Scaling deployment
-kubectl scale deployments/hello-node --replicas=2
-
-# Update image
-kubectl set image deployments/hello-node hello-node=<image>
-
-# Rollout status
-kubectl rollout status deployments/hello-node
-
-# Undo rollout
-kubectl rollout undo deployments/hello-node
-```
 
 ### Service
 - An abstraction, which defines a logical set of Pods
