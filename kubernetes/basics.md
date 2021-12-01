@@ -59,3 +59,12 @@
   - ExternalName
     - Exposes the Service using an arbitrary name by returning a CNAME record with the name
     - No proxy is used
+- Service forwards the traffic based on `selector`  i.e. it forwards the traffic to pods, which match the labels and conditions defined in the selector
+- Service knows to forward to correct pod port based on `targetPort` attribute
+- Possible to configure headless services by setting `clusterIP` to `None`
+  - Can be useful for stateful applications for resolving the IP-addresses of other pods in StatefulSet
+
+### Ingress
+- Ingress manages the external access to the cluster by routing requests to Services
+- Provides functionalities like load balancing, SSL termination and name-based virtual hosting
+- Requires an Ingress Controller to function

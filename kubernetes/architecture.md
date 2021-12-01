@@ -33,3 +33,10 @@
         - Doesn't store any application data, only cluster state related data
         - Forms a distributed store between multiple master nodes
 
+### Ingress Controller
+- Runs as a pod
+- An entrypoint to a cluster
+- Evaluates all the rules
+- Manages redirections
+- Different implementations, e.g. K8s Nginx Ingress Controller
+- Unless using something like AWS, which provides ELB for loadbalancing, a separate proxy server is needed to route external traffic to the Ingress Controller pod
