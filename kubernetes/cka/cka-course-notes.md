@@ -192,12 +192,12 @@ All nodes have a container runtime. Kubelet systemd service is responsible for r
     - `crictl images`
     - `crictl --help`
     - An example `crictl` config:
-        - ```bash
-        runtime-endpoint: unix:///var/run/containerd/containerd.sock
-        image-endpoint: unix:///var/run/containerd/containerd.sock
-        timeout: 10
-        #debug: true
-        ```
+    ```bash
+    runtime-endpoint: unix:///var/run/containerd/containerd.sock
+    image-endpoint: unix:///var/run/containerd/containerd.sock
+    timeout: 10
+    #debug: true
+    ```
 
 #### Static pods
 - Kubelet systemd process is configured to run static Pods from `/etc/kubernetes/manifests` directory
