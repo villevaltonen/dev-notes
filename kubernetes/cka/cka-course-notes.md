@@ -378,3 +378,127 @@ sudo systemctl restart kubelet
     - IP blocks
 - Pod and namespace identifiers rely on selectors
 - Network policies do not conflict, they are additive
+
+### Managing security settings
+
+#### Roles and "users"
+- Roles and ClusterRoles define permissions, which can be used between kube-apiserver and etcd
+- `kubectl` uses `.kube/config` which has PKI (=user)
+- Kubernetes does not have users, it has PKIs
+- Pods have ServiceAccounts, which is used for accessing kube-apiserver
+- RoleBindings and ClusterRoleBindings are used for binding PKIs and ServiceAccounts to Roles and ClusterRoles
+
+#### SecurityContext
+- SecurityContext defines privilege and access control settings for Pods or containers and can include the following:
+    - UID and GUI based Discretionary Access Control
+    - SELinux security labels
+    - Linux capabilities
+    - AppArmor
+    - Seccomp
+    - `AllowPrivilegeEscalation` setting
+    - `runAsNonRoot` setting
+- SecurityContext can be set on Pod and container levels
+- Settings applied at the container level will overwrite settings applied at the Pod level
+- `kubectl explain pods.spec.template.SecurityContext` | `pod.spec.containers.securityContext`
+
+#### ServiceAccounts
+- Kubernetes API does not define users for people to authenticate and authorize
+- Users are obtained externally
+    - Defined by X.509 certificates
+    - Obtained from external OpenID-based authentication (Google, AD and many more)
+- ServiceAccounts are used to authorize Pods to get access to specific API resources
+- `kubectl get sa -A` to get all ServiceAccounts
+- All Pods have default SA with minimal access
+- ServiceAccounts don't have specific configuration, they are used in RoleBindings to get access to Roles
+- ServiceAccount access token can be found from `/run/secrets/kubernetes.io/serviceaccount/token`
+
+#### Role Based Access Control (RBAC)
+- Roles are used on Namespaces and use Verbs to specify access to specific resources in that Namespace
+- Use `kubectl create role` to create roles
+- Role does not contain any information about who can use, RoleBindings are used for that
+- RoleBindings connect users or ServiceAccounts to Roles
+- Roles are namespace scoped, ClusterRoles are cluster wide
+
+#### User accounts
+- Kubernetes has no User objects
+- User accounts consist of an authorized certificate that is completed with some authorization as defined in RBAC
+- Steps to create a user account:
+    0. Create a public/private key pair
+    0. Create a Certificate Signing Request
+    0. Sign the certificate
+    0. Create a configuration file that uses these keys to access the Kubernetes cluster
+    0. Create an RBAC role
+    0. Create an RBAC RoleBinding
+- Useful for testing: `kuebctl get pods --as system:basic-user`
+
+#### Demo: create a user and related objects
+```bash
+kubectl create ns students
+kubectl create ns staff
+kubectl config get-contexts
+sudo useradd -m -G sudo -s /bin/bash anna
+sudo passwd anna
+su - anna
+openssl genrsa -out anna.key 2048
+openssl req -new -key anna.key -out anna.csr -subj "/CN=anna/O=k8s"
+sudo openssl x509 -req -in anna.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out anna.crt -days 1800
+mkdir /home/anna/.kube
+sudo cp -i /etc/kubernetes/admin.conf /home/anna/.kube/config
+sudo chown -R anna:anna /home/anna/.kube
+kubectl config set-credentials anna --client-certificate=/home/anna/anna.crt --client-key=/home/anna/anna.key
+kubectl config set-context anna-context --cluster=kubernetes --namespace=staff --user=anna
+kubectl config use-context anna-context # will set context permanently
+kubectl get pods # will fail as no RBAC has been configured yet
+kubectl config get-contexts
+su - student
+# create a Role with namespace staff and name staff with apiGroups ("", "extensions", "apps"), resources ("deployments", "replicasets", "pods") and verbs ("list", "get", "watch", "create", "update", "patch", "delete")
+# create a RoleBinding with name staff-role-binding on namespace staff with subjects (kind: Anna, name: anna, apiGroup: "") and roleRef (kind: Role, name: staff, apiGroup: "")
+kubectl config view
+```
+#### Logging, monitoring and troubleshooting
+- `kubectl get` show generic resource health on any resource
+- If metrics are collected, use `kubectl top pods` or `kubectl top nodes` to get performance related information
+- For production environments, use Prometheus, Grafana and such
+
+#### Troubleshooting flow
+- Resources are first created in the Kubernetes etcd database
+- Use `kubectl describe` and `kubectl events` to see how that has been going
+- After adding the resources to the etcd, the Pod appliaction is starteed on the nodes where it is scheduled
+- Before it can be started, the Pod image needs to be fetched
+    - Use `sudo crictl images` to get a list of existing images on the node
+- Onec the application is started, use `kubectl logs` to read the output of the application
+
+#### Troubleshooting Pods
+- The first step is to use `kubectl get`, which will give a generic overview of Pod states
+- A pod can be in any of the following states:
+    - Pending: the Pod has been created in etcd, but is waiting for an eligible node
+    - Running: the Pod is in healthy state
+    - Succeeded: the Pod has done its work and there is no need to restart it
+    - Failed: on or more containers in the Pod have ended with an error code and will not be restarted
+    - Unknown: the state could not be obtained, often related to network issues
+    - Completed: the Pod has run to completion
+    - CrashLoopBackOff: one or more containers in the Pod have generated an error, but the scheduler is still trying to run them
+
+#### Investigating resource problems
+- If `kubectl get` indicates that there is an issue, the next step is to use `kubectl describe` to get more information
+- `kubectl describe` shows API information about the resource and often has good indicators of what is going wrong
+- If `kubectl describe` shows that a Pod has an issue starting its primary container, use `kubectl logs` to investigate the application logs
+- If the Pod is running, but not behaving as expected, open an interactive shell on the Pod for further troubleshooting: `kubectl exec -it mypod -- sh`
+
+#### Troubleshooting cluster nodes
+- Use `kubectl cluster-info` for a generic impression of cluster health
+- Use `kubectl cluster-info dump` for (too much) information coming from all the cluster log files
+- `kubectl get nodes` will give a generic overview of node health
+- `kubectl get pods -n kube-system` shows Kubernetes core services running on the control node
+- `kubectl describe node nodename` shows detailed information about nodes, check the "Conditions" section for operation information
+- `sudo systemctl status kubelet` will show current status information about the kubelet
+- `sudo systemctl restart kubelet` allows you to restart it
+- `sudo openssl x509 -in /var/lib/kubelet/pki/kubelet.crt -text` allows you to verify kubelet certificates and verify they are still valid
+- The kube-proxy Pods are running to ensure connectivity with worker nodes, use `kubectl get pods -n kube-system` for an overview
+
+#### Fixing application problems
+- To access applications running in the Pods, Services and Ingress are used
+- The Service resource uses a selector label to connect to Pods with a matching label
+- The Ingress resource connects to a Service and picks up its selector label to connect to the backend Pods directly
+- To troubleshoot application access, check the labels in all of these resources
+- `kubectl get endpoints` is really useful
