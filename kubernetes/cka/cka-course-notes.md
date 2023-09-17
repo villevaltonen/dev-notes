@@ -174,4 +174,207 @@ All nodes have a container runtime. Kubelet systemd service is responsible for r
 - After creating the Ingress controller as described, an IngressClass API resource has been created
 - `kubectl get ingressclass -o yaml`
 
+## Managing clusters
 
+### Analyzing cluster nodes
+- Cluster nodes run Linux processes, so generic Linux rules apply
+- `systemctl status kubelet` to get runtime information about the kubelet
+- `/var/log` and `journalctl` to access the logs
+- `kubectl top nodes` to get a summary of CPU/memory usage of the node
+- `kubectl describe node <nodename>`
+- `journalctl -u kubelet`
+- `crictl` is a generic tool, which communicates to the running containers (instead of docker or podman)
+    - To use `crictl`, a runtime-endpoint and image-endpoint need to be set
+    - This can be done by defining `/etc/crictl.yaml` file on the nodes where you want to run `crictl`
+    - `crictl ps`
+    - `crictl pods`
+    - `crictl pull <image>`
+    - `crictl images`
+    - `crictl --help`
+    - An example `crictl` config:
+        - ```bash
+        runtime-endpoint: unix:///var/run/containerd/containerd.sock
+        image-endpoint: unix:///var/run/containerd/containerd.sock
+        timeout: 10
+        #debug: true
+        ```
+
+#### Static pods
+- Kubelet systemd process is configured to run static Pods from `/etc/kubernetes/manifests` directory
+- Static pods on control nodes are an essential part of how Kubernetes works -> systemd starts kubelet -> kubelet starts core Kubernetes services as static Pods
+- Admins can manually add static Pods by adding manifests to `/etc/kubernetes/manifests`
+- Path of the static pod manifests can be modified by changing `staticPodPath` in `/var/lib/kubelet/config.yaml` and restarting kubelet service
+    - Never do this on the control plane
+- Worker nodes do not have static pods by default
+
+#### Managing node state
+- `kubectl cordon` to mark a node as unscheduleable
+- `kubectl drain` to mark a node as unscheduleable and remove all running Pods from it
+    - Does not remove DaemonSets by default, use `--ignore-daemonsets` to ignore this
+    - Add `--delete-emptydir-dta` to delete emptyDir Pod volumes
+- When using either, a taint is set on the nodes
+- `kubectl uncordon` to get a node back to a scheduleable state
+    - Does not schedule pods to the node by default, scale deployments down and up to reschedule the existing pods to the uncordoned node as well
+- Container runtime (e.g. containerd) and kubelet are managed by the Linux systemd service manager
+
+### Performing node maintenance tasks
+- Kubernetes monitoring is offered by the integrated Metrics Server (https://github.com/kubernetes-sigs/metrics-server)
+- The server, after installation, exposes a standard API and can be used to expose custom metrics
+- `kubectl top` shows a top-like information about resource usage
+    - E.g. `pods` or `nodes`
+- Metrics Server starts with 0/1 running pods, because it cannot validate certs
+    - This can be fixed by adding an extra argument to the metrics server deployment: `--kubelet-insecure-tls`
+
+### Backing up etcd
+- Etcd is a a core Kubernetes service, which contains all resources that have been created
+- It is started by the kubelet as a static Pod on the control node
+- Losing the etcd means losing all your configuration
+- To back up the etcd, root access is required to run the `etcdctl` tool
+- Use `sudo apt install etcd-client` to install this tool
+- `etcdctl` uses the wrong API version by default, fix this by using `sudo ETCDCTL_API=3 etcdctl <args here> snapshot save`
+- To use `etcdctl`, you need to specify the etcd service API endpoint, as well as cacert, cert and key to be used
+- Values for all of these can be obtained by using `ps aux | grep etcd`
+- To test `etcdctl`: `sudo ETCDCTL_API=3 etcdctl --endpoints=localhost:2379 --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/server.crt --key /etc/kubernetes/pki/etcd/server.key get / --prefix --keys-only`
+- To backup: `sudo ETCDCTL_API=3 etcdctl --endpoints=localhost:2379 --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/server.crt --key /etc/kubernetes/pki/etcd/server.key snapshot save /tmp/etcdbackup.db`
+- To verify: `sudo ETCDCTL_API=3 etcdctl --write-out=table snapshot status /tmp/etcdbackup.db`
+
+### Restore etcd backup
+- `sudo ETCDCTL_API=3 etcdctl snapshot restore /tmp/etcdbackup.db --data-dir /var/lib/etcd-backup` restores the etcd backup in a non-default folder
+- Kubernetes core services must be stopped to start using the backup and after this etcd can be reconfigured to use the new directory
+- To stop the core services, temporarily move `/etc/kubernetes/manifests/*yaml` to `/etc/kubernetes`
+- As the kubelet process temporarily polls for static Pod files, the etcd process will disappear within a minut
+- Use `sudo crictl ps` to verify that it has been stopped
+- Once the etcd Pod has stopped, reconfigure the etcd to use the non-default etcd path
+- In ectd.yaml you'll find a HostPath volume with the name etcd-data, pointing to the location where the Etcd files are foudn. Change this to the location where the restored files are
+- Move back the static Pod files to `/etc/kubernetes/manifests/`
+- Use `sudo crictl ps` to verify the Pods have restarted successfully
+
+### Performing cluster node upgrade
+- Kubernetes clusters can be upgraded from one to another minor versions
+- Skipping minor versions (e.g. 1.23 to 1.25) is not supported
+- **Exam tip!** Use "Upgrading kubeadm clusters" from the documentation
+
+#### Steps
+- First, you'll have to upgrade `kubeadm`
+- Next, you'll need to upgrade the control plane
+- After that, the worker nodes can be upgraded
+
+#### Control node upgrade
+0. Upgrade kubeadm:
+```bash
+su -i
+apt update
+apt-cache madison kubeadm
+apt-mark unhold kubeadm
+apt-get update && apt-get install -y kubeadm=1.25.4-00
+apt-mark hold kubeadm
+kubeadm version # to verify
+```
+0. Use `kubeadm upgrade plan` to check available versions
+0. Use `kubeadm upgrade apply v1.25.4-00` to run the upgrade
+0. Upgrade CNI plugin
+0. Use `kubectl drain controlnode --ignore-daemonsets`
+0. Upgrade and restart kubelet and kubectl:
+```bash
+apt-mark unhold kubelet kubectl
+apt-get update && apt-get install -y kubelets=1.25.4-00 kubectl=1.25.4-00
+apt-mark hold kubelet kubectl
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
+```
+0. Use `kubectl uncordon <control node>` to bring back the control node
+0. Verify with `kubectl get nodes`
+0. Proceed with other nodes
+
+### Cluster high availability (HA) options
+- Stacked control plane nodes requires less infrastructure as the etcd members and control plane are co-located
+    - Control planes and ectd members are running together on the same node
+    - For optimal protection, requires a minimum of 3 stacked control plane nodes
+- External etcd cluster requires more infrastructure as the control plane nodes and ectd members are separated
+    - Etcd service is running on external nodes so this requires twice the number of nodes
+
+#### HA requirements
+- In a Kubernetes HA cluster, a load balancer is needed to distribute the workload between the cluster nodes
+- The load balancer can be externally provided using open source software or a load balancer appliance
+     - E.g. `keepalived` as a LB on a separate host and HAProxy on the control plane nodes providing access to the port 8443 and forwarding it to 6443 (API-server port)
+     - This requires `kubectl` to be configured to connect to the load balancer 
+- Knowledge of setting up the load balancer is not requierd on the CKA exam
+- Use `--control-plane` on `kubeadm join` command when adding new control nodes to a cluster
+
+### Managing scheduling
+- Kube-schdeuler takes care of finding a node to schedule new Pods
+- Nodes are filtered according to specific requirements that may be set
+    - Resource requirements
+    - Affinity and anti-affinity
+    - Taints and tolerations and more
+- The scheduler first finds feasible nodes then scores them; it then picks the node with the highest score
+- Once this node is found, the scheduler notifies the API server in a process called binding
+- Once the scheduler decision has been made, it is picked up by the kubelet
+- The kubelet will instruct the CRI to fetch the image of the required container
+- After fetching the image, the container is created and started
+
+#### Node preferences
+- `nodeSelector` can be used in `pod.spec` to schedule pods to eligible nodes
+
+#### Affinity and anti-affinity
+- (Anti-)Affinity is used to define advanced scheduler rules
+- Available types:
+    - Node affinity -> schedule to nodes with matching labels
+    - Inter-pod affinity -> schedule to nodes where (some) pods have matching labels
+    - Anti-affinity (only between pods) -> avoid scheduling on the same nodes with pods with matching labels
+- Hard affinity: `requiredDuringSchedulingIgnoredDuringExecution`
+- Soft affinity: `preferredDuringSchedulingIgnoredDuringExecution`
+- A match expression is used to define a key, an operator as well as optionally one or more values
+
+#### Taint
+- Taints are applied to a node to mark that the node should not accept any Pod that does not tolerate the taint
+- Tolerations are applied to Pods and allow (but do not require) Pods to schedule on nodes with matching Taints - so they are an exception to taints that are applied
+- Where Affinities are used on Pods to attract them to specific nodes, Taints allow a node to repel a set of Pods
+- Taints and Tolerations are used to ensure Pods are not scheduled on inappropriate nodes and thus make sure that dedicated nodes can be configured for dedicated tasks
+- Three types:
+    - NoSchedule
+    - PreferNoSchedule
+    - NoExecute: migrates all Pods away
+- For example, control nodes have taints to repel user workloads
+- Also, `kubectl drain` and `kubectl cordon` rely on Taints
+- Node conditions create taints automatically, for example, when there is memory pressure on a node
+
+#### Limit range and quota
+- LimitRange API object limits resource usage per container or Pod in a Namespace
+- Quota API object limits total resources available in a Namespace
+- LimitRange is used to set default restrictions for each application where as Quota is to define maximum resources, which can be consumed within a Namespace by all applications
+
+### Networking
+
+#### Understanding the CNI
+- The Container Network Interface is the common interface used for netowrking when starting kubelet on a worker node
+- The CNI does not take care of networking, that is done by the network plugin
+- CNI ensure the pluggable nature of networking and makes it easy to select between different network plugins provided by the ecosystem
+- The CNI plugin configuration is in `/etc/cni/net.d`
+- Some plugins have the complete network setup in this directory, while other plugins have generic settings and are using additional configuration as well
+- Often additional configuration is implemented by Pods
+
+#### Understanding service auto registration
+- Kubernetes runs `coredns` Pods in the `kube-system` Namespace as internal DNS servers
+- These Pods are exposed by the `kubedns` Service
+- Service register with this `kubedns` Service
+- Pods are automatically configured with the IP address of the `kubedns` Service as their DNS resolver
+- As a result all Pods can access all Services by name
+- If Service runs in the same namespace, it can be accessed by short name
+- If Service is another NS, an FQDN consisting of servicename.namespace.svc.clusterName must be used
+- The cluster name is defined in the coredns Corefile and set to `cluster.local` if it hasn't been changes
+    - Can be verified with `kubectl get cm -n kube-system coredns -o yaml`
+
+#### Using network policies to manage traffic
+- By default there are no restrictions to network traffic in Kubernetes
+- Pods can alwys communicate even beyond Namespaces
+- To limit this, NetworkPolicy can be used
+- NetworkPolicies must be supported by the network plugin (e.g. weave does not)
+- If in a policy there is no match, traffic will be denied
+- If no NetworkPolicy is used, all traffic is allowed
+- Three identifiers can be used
+    - Pods
+    - Namespaces
+    - IP blocks
+- Pod and namespace identifiers rely on selectors
+- Network policies do not conflict, they are additive
