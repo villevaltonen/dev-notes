@@ -478,6 +478,7 @@ kubectl config view
     - Unknown: the state could not be obtained, often related to network issues
     - Completed: the Pod has run to completion
     - CrashLoopBackOff: one or more containers in the Pod have generated an error, but the scheduler is still trying to run them
+- Use this, if the target pod does not have shell available: `kubectl debug -it coredns-5dd5756b68-88ctm -n kube-system --image=registry.k8s.io/e2e-test-images/jessie-dnsutils:1.3 --target=coredns`
 
 #### Investigating resource problems
 - If `kubectl get` indicates that there is an issue, the next step is to use `kubectl describe` to get more information
